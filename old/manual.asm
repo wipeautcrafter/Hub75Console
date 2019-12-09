@@ -1,3 +1,7 @@
+jmp initialize
+
+.include "sleep.asm"
+
 .equ CLK = 1
 .equ LATCH = 0
 .equ OE = 5
@@ -26,6 +30,7 @@ grid:
 row:
   ldi POSX, 0
 pixel:
+  cbi PORTB, OE ; OE off
   ; clock in single pixel
   push RGB
   lsl RGB
@@ -44,10 +49,13 @@ pixel:
   sbr POSY, 1 ; latch on
   out PORTC, POSY
   cbi PORTC, LATCH ; latch off
-  cbi PORTB, OE
   pop POSY
   ; loop
   inc POSY
   cpi POSY, 32
   brne row
+
+  ; ldi r16, 3
+  ; call delay
+
   rjmp grid

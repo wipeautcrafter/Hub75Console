@@ -11,7 +11,6 @@ delay:
   clr r25
 wait_1:
   adiw r25:r24, 1
-  call drawFrame
   brne wait_1
   dec r16
   brne delay
