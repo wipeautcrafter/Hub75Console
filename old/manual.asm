@@ -34,6 +34,7 @@ pixel:
   ; clock in single pixel
   push RGB
   lsl RGB
+  lsl RGB
   sbr RGB, 2 ; Set CLK bit (PD1)
   out PORTD, RGB
   cbi PORTD, CLK ; set CLK bit off
@@ -50,6 +51,7 @@ pixel:
   out PORTC, POSY
   cbi PORTC, LATCH ; latch off
   pop POSY
+
   ; loop
   inc POSY
   cpi POSY, 32

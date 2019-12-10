@@ -13,7 +13,7 @@ main:
   call initialize
   call clearFrameBuffer
 
-  ldi POSY, 31
+  ldi POSY, 0
   ldi POSX, 0
 
 row:

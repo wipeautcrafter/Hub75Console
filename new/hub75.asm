@@ -6,22 +6,22 @@ frameBuffer: .BYTE 48 * 32
 .equ LATCH = 0 ; C
 .equ CLK = 1 ; D
 
-.def TMP = r13
-.def TMP2 = r14
-.def TMP3 = r15
-.def RGB = r16
-.def POSX = r17
-.def POSY = r18
+.def TMP = r16
+.def TMP2 = r17
+.def TMP3 = r18
+.def RGB = r19
+.def POSX = r20
+.def POSY = r21
 
 initialize:
   ser TMP
-  out DDRB, r16
-  out DDRC, r16
-  out DDRD, r16
+  out DDRB, TMP
+  out DDRC, TMP
+  out DDRD, TMP
   clr TMP
-  out PORTB, r16
-  out PORTC, r16
-  out PORTD, r16
+  out PORTB, TMP
+  out PORTC, TMP
+  out PORTD, TMP
   ret
 
 ; RELATED TO FRAME BUFFER
@@ -60,7 +60,7 @@ calcBufferOffset:
   movw Y, r0
   ldi TMP, 6
   mul TMP, POSX
-  movw, X, r0
+  movw X, r0
   lsl XH
   lsl XH
   lsl XH
@@ -107,29 +107,106 @@ bufferPosOcc2:
   or TMP, TMP3
   rjmp writeToBuffer
 bufferPosOcc3:
-andi TMP, 0b11110000
-andi TMP2, 0b00111111
-mov TMP3, RGB
-lsr RGB
-lsr RGB
-lsl TMP3
-lsl TMP3
-lsl TMP3
-lsl TMP3
-lsl TMP3
-lsl TMP3
-or TMP, RGB
-or TMP, TMP3
-rjmp writeToBuffer
+  andi TMP, 0b11110000
+  andi TMP2, 0b00111111
+  mov TMP3, RGB
+  lsr RGB
+  lsr RGB
+  lsl TMP3
+  lsl TMP3
+  lsl TMP3
+  lsl TMP3
+  lsl TMP3
+  lsl TMP3
+  or TMP, RGB
+  or TMP, TMP3
+  rjmp writeToBuffer
 bufferPosOcc4:
-
+  andi TMP, 0b11000000
+  lsr RGB
+  lsr RGB
+  or TMP, RGB
+  rjmp writeToBuffer
 writeToBuffer:
-  st TMP2, X-
-  st TMP, X
-
+  st -X, TMP2
+  st X, TMP
   pop RGB
   pop POSY
   pop POSX
   ret
 
 ; RELATED TO DRAWING TO SCREEN
+
+drawFrame:
+  ldi ZH, high(frameBuffer)
+  ldi ZL, low(frameBuffer)
+  clr POSY
+drawFrameLine:
+  clr POSX
+drawFramePixels:
+  ; 11111122 22223333
+  ld RGB, Z+
+  mov TMP, RGB
+  lsr RGB
+  lsr RGB
+  call writeOneRGBPixel
+  ; 11111122 22223333
+  ld RGB, Z+
+  mov TMP2, RGB
+  lsl TMP
+  lsl TMP
+  lsl TMP
+  lsl TMP
+  lsr RGB
+  lsr RGB
+  lsr RGB
+  lsr RGB
+  or RGB, TMP
+  call writeOneRGBPixel
+  ; 22223333 33444444
+  ld RGB, Z+
+  mov TMP, RGB
+  lsl TMP2
+  lsl TMP2
+  lsr RGB
+  lsr RGB
+  lsr RGB
+  lsr RGB
+  lsr RGB
+  lsr RGB
+  or RGB, TMP2
+  call writeOneRGBPixel
+  ; 33444444 11111122
+  mov RGB, TMP
+  call writeOneRGBPixel
+  ; next 4 pixels
+  inc POSX
+  cpi POSX, 16
+  brne drawFramePixels
+  ; clock in row
+  call writeToRow
+  inc POSY
+  cpi POSY, 32
+  brne drawFrameLine
+
+writeToRow:
+  push POSY
+  sbi PORTB, OE
+  lsl POSY
+  andi POSY, 0b00111110
+  sbr POSY, 1 ; latch on
+  out PORTC, POSY
+  cbi PORTC, LATCH ; latch off
+  cbi PORTB, OE
+  pop POSY
+  ret
+
+writeOneRGBPixel:
+  push RGB
+  lsl RGB
+  lsl RGB
+  sbr RGB, 2 ; Set CLK bit (PD1)
+  out PORTD, RGB
+  cbi PORTD, CLK ; set CLK bit off
+  pop RGB
+  ret
