@@ -74,8 +74,11 @@ calcBufferOffset:
   adc YH, XH
 calcBufferPos:
   ; grab bytes from buffer (memory)
-  ld TMP, X+
-  ld TMP2, X
+  add ZL, YL
+  adc ZH, YH
+
+  ld TMP, Z+
+  ld TMP2, Z
 
   andi POSX, 0b0011
 
@@ -119,17 +122,15 @@ bufferPosOcc3:
   lsl TMP3
   lsl TMP3
   or TMP, RGB
-  or TMP, TMP3
+  or TMP2, TMP3
   rjmp writeToBuffer
 bufferPosOcc4:
   andi TMP, 0b11000000
-  lsr RGB
-  lsr RGB
   or TMP, RGB
   rjmp writeToBuffer
 writeToBuffer:
-  st -X, TMP2
-  st X, TMP
+  st Z, TMP2
+  st -Z, TMP
   pop RGB
   pop POSY
   pop POSX
@@ -151,6 +152,7 @@ drawFramePixels:
   lsr RGB
   call writeOneRGBPixel
   ; 11111122 22223333
+  ; TMP      RGB
   ld RGB, Z+
   mov TMP2, RGB
   lsl TMP
@@ -164,6 +166,7 @@ drawFramePixels:
   or RGB, TMP
   call writeOneRGBPixel
   ; 22223333 33444444
+  ; TMP2     RGB
   ld RGB, Z+
   mov TMP, RGB
   lsl TMP2
