@@ -1,6 +1,7 @@
 jmp main
 
 .include "hub75.asm"
+.include "sleep.asm"
 
 main:
   ; set the stack pointer to the start of the stack
@@ -11,19 +12,25 @@ main:
 
   call initialize
   call clearFrameBuffer
+leinit:
+  ldi TMP4, 3
 grid:
-  ldi POSY, 10
+  clr POSY
 row:
-  ldi POSX, 0
+  clr POSX
 col:
-  ldi RGB, 0b00000111
+  ldi RGB, 0b00000010
   call setPixel
   inc POSX
-  cpi POSX, 64
+  cp POSX, TMP4
   brne col
   inc POSY
-  cpi POSY, 40
+  cp POSY, TMP4
   brne row
 loop:
   call drawFrame
-  jmp loop
+  inc TMP4
+  cpi TMP4, 64
+  brne grid
+  call clearFrameBuffer
+  rjmp leinit

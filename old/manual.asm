@@ -5,7 +5,7 @@ jmp initialize
 .equ CLK = 1
 .equ LATCH = 0
 .equ OE = 5
-.equ WHITE = 0b00111111
+.equ WHITE = 0b00101101
 
 .def TMP1 = r16
 .def RGB = r17
@@ -52,8 +52,10 @@ pixel:
   cbi PORTC, LATCH ; latch off
   pop POSY
 
-  ldi TMP1, 5
+  push TMP1
+  ldi TMP1, 1
   call delay
+  pop TMP1
 
   ; loop
   inc POSY

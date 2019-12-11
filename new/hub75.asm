@@ -31,8 +31,8 @@ clearFrameBuffer:
   ldi ZH, high(frameBuffer)
   ldi ZL, low(frameBuffer)
   clr TMP
-  ldi XH, high(48 * 32 - 1)
-  ldi XL, low(48 * 32 - 1)
+  ldi XH, high(48 * 32)
+  ldi XL, low(48 * 32)
 clearBufferLoop:
   st Z+, TMP
   sbiw X, 1
@@ -193,6 +193,7 @@ drawFramePixels:
   inc POSY
   cpi POSY, 32
   brne drawFrameLine
+  ret
 
 writeToRow:
   push POSY
