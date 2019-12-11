@@ -1,7 +1,7 @@
 jmp main
 
-.include "hub75.asm"
-.include "sleep.asm"
+.include "../hub75.asm"
+.include "../sleep.asm"
 
 main:
   ; set the stack pointer to the start of the stack
