@@ -11,9 +11,8 @@ main:
 
   call initialize
   call clearFrameBuffer
-
-  ldi POSY, 0
-
+grid:
+  ldi POSY, 10
 row:
   ldi POSX, 0
 col:
@@ -23,7 +22,7 @@ col:
   cpi POSX, 64
   brne col
   inc POSY
-  cpi POSY, 1
+  cpi POSY, 40
   brne row
 loop:
   call drawFrame

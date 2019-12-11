@@ -9,9 +9,10 @@ frameBuffer: .BYTE 48 * 32
 .def TMP = r16
 .def TMP2 = r17
 .def TMP3 = r18
-.def RGB = r19
-.def POSX = r20
-.def POSY = r21
+.def TMP4 = r19
+.def RGB = r20
+.def POSX = r21
+.def POSY = r22
 
 initialize:
   ser TMP
@@ -34,6 +35,7 @@ clearFrameBuffer:
   ldi XL, low(48 * 32 - 1)
 clearBufferLoop:
   st Z+, TMP
+  sbiw X, 1
   brne clearBufferLoop
   ret
 
@@ -89,14 +91,14 @@ calcBufferPos:
   cpi POSX, 0b0001
   breq bufferPosOcc2
 bufferPosOcc1:
-  andi TMP, 0b00000011
+  ;andi TMP, 0b00000011
   lsl RGB
   lsl RGB
   or TMP, RGB
   rjmp writeToBuffer
 bufferPosOcc2:
-  andi TMP, 0b11111100
-  andi TMP2, 0b00001111
+  ;andi TMP, 0b11111100
+  ;andi TMP2, 0b00001111
   mov TMP3, RGB
   lsl RGB
   lsl RGB
@@ -110,8 +112,8 @@ bufferPosOcc2:
   or TMP, TMP3
   rjmp writeToBuffer
 bufferPosOcc3:
-  andi TMP, 0b11110000
-  andi TMP2, 0b00111111
+  ;andi TMP, 0b11110000
+  ;andi TMP2, 0b00111111
   mov TMP3, RGB
   lsr RGB
   lsr RGB
@@ -125,7 +127,7 @@ bufferPosOcc3:
   or TMP2, TMP3
   rjmp writeToBuffer
 bufferPosOcc4:
-  andi TMP, 0b11000000
+  ;andi TMP, 0b11000000
   or TMP, RGB
   rjmp writeToBuffer
 writeToBuffer:
