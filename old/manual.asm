@@ -52,6 +52,9 @@ pixel:
   cbi PORTC, LATCH ; latch off
   pop POSY
 
+  ldi TMP1, 5
+  call delay
+
   ; loop
   inc POSY
   cpi POSY, 32
