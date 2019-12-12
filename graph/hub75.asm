@@ -46,9 +46,12 @@ setPixel:
   push POSY
   push RGB
 
+  ; TMP4 = POSY < 32 ? 0x00 : 0xff
+  clr TMP4
   cpi POSY, 32
   brlo calcBufferOffset
   subi POSY, 32
+  ser TMP4
   lsl RGB
   lsl RGB
   lsl RGB
@@ -91,14 +94,11 @@ calcBufferPos:
   cpi POSX, 0b0001
   breq bufferPosOcc2
 bufferPosOcc1:
-  ;andi TMP, 0b00000011
   lsl RGB
   lsl RGB
   or TMP, RGB
   rjmp writeToBuffer
 bufferPosOcc2:
-  ;andi TMP, 0b11111100
-  ;andi TMP2, 0b00001111
   mov TMP3, RGB
   lsl RGB
   lsl RGB
@@ -112,8 +112,6 @@ bufferPosOcc2:
   or TMP, TMP3
   rjmp writeToBuffer
 bufferPosOcc3:
-  ;andi TMP, 0b11110000
-  ;andi TMP2, 0b00111111
   mov TMP3, RGB
   lsr RGB
   lsr RGB
@@ -127,16 +125,62 @@ bufferPosOcc3:
   or TMP2, TMP3
   rjmp writeToBuffer
 bufferPosOcc4:
-  ;andi TMP, 0b11000000
   or TMP, RGB
   rjmp writeToBuffer
 writeToBuffer:
+  call MaskPixels
   st Z, TMP2
   st -Z, TMP
   pop RGB
   pop POSY
   pop POSX
   ret
+
+; Mask out unused bits in TMP and TMP2 just before storing, so top and bottom pixels do not affect eachother, 
+; but overwriting existing pixels can still be done
+maskPixels:
+  cpi TMP4, 0x00
+  brne yIsGreaterThan31
+  cpi POSX, 0b0011
+  breq maskLowBitsOcc4
+  cpi POSX, 0b0010
+  breq maskLowBitsOcc3
+  cpi POSX, 0b0001
+  breq maskLowBitsOcc2
+maskLowBitsOcc1:
+   andi TMP, 0b11100011
+   ret
+maskLowBitsOcc2:
+   andi TMP2, 0b10001111
+   ret
+maskLowBitsOcc3:
+   andi TMP, 0b11111110
+   andi TMP2, 0b00111111
+   ret
+maskLowBitsOcc4:
+   andi TMP, 0b11111000
+   ret
+
+yIsGreaterThan31:
+  cpi POSX, 0b0011
+  breq maskHighBitsOcc4
+  cpi POSX, 0b0010
+  breq maskHighBitsOcc3
+  cpi POSX, 0b0001
+  breq maskHighBitsOcc2
+maskHighBitsOcc1:
+   andi TMP, 0b00011111
+   ret
+maskHighBitsOcc2:
+   andi TMP, 0b11111100
+   andi TMP2, 0b01111111
+   ret
+maskHighBitsOcc3:
+   andi TMP, 0b11110001
+   ret
+maskHighBitsOcc4:
+   andi TMP, 0b11000111
+   ret
 
 ; RELATED TO DRAWING TO SCREEN
 
