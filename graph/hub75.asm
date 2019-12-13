@@ -14,6 +14,7 @@ frameBuffer: .BYTE 48 * 32
 .def POSX = r21
 .def POSY = r22
 
+
 initialize:
   ser TMP
   out DDRB, TMP
@@ -90,7 +91,6 @@ calcBufferPos:
   ld TMP, Z+
   ld TMP2, Z
 
-  call MaskPixels
 
   andi POSX, 0b0011
 
@@ -103,6 +103,7 @@ calcBufferPos:
 bufferPosOcc1:
   lsl RGB
   lsl RGB
+  call maskPixels
   or TMP, RGB
   rjmp writeToBuffer
 bufferPosOcc2:
@@ -115,6 +116,7 @@ bufferPosOcc2:
   lsr TMP3
   lsr TMP3
   lsr TMP3
+  call maskPixels
   or TMP2, RGB
   or TMP, TMP3
   rjmp writeToBuffer
@@ -128,10 +130,12 @@ bufferPosOcc3:
   lsl TMP3
   lsl TMP3
   lsl TMP3
+  call maskPixels
   or TMP, RGB
   or TMP2, TMP3
   rjmp writeToBuffer
 bufferPosOcc4:
+  call maskPixels
   or TMP, RGB
   rjmp writeToBuffer
 writeToBuffer:
