@@ -85,6 +85,8 @@ calcBufferPos:
   ld TMP, Z+
   ld TMP2, Z
 
+  call MaskPixels
+
   andi POSX, 0b0011
 
   cpi POSX, 0b0011
@@ -128,7 +130,6 @@ bufferPosOcc4:
   or TMP, RGB
   rjmp writeToBuffer
 writeToBuffer:
-  call MaskPixels
   st Z, TMP2
   st -Z, TMP
   pop RGB
