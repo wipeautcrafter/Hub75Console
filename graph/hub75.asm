@@ -45,6 +45,10 @@ setPixel:
   push POSX
   push POSY
   push RGB
+  push TMP
+  push TMP2
+  push TMP3
+  push TMP4
 
   ; TMP4 = POSY < 32 ? 0x00 : 0xff
   clr TMP4
@@ -132,6 +136,10 @@ bufferPosOcc4:
 writeToBuffer:
   st Z, TMP2
   st -Z, TMP
+  pop TMP4
+  pop TMP3
+  pop TMP2
+  pop TMP
   pop RGB
   pop POSY
   pop POSX
