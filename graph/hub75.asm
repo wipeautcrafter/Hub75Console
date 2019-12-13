@@ -194,6 +194,11 @@ maskHighBitsOcc4:
 ; RELATED TO DRAWING TO SCREEN
 
 drawFrame:
+  push RGB
+  push TMP
+  push TMP2
+  push POSX
+  push POSY
   ldi ZH, high(frameBuffer)
   ldi ZL, low(frameBuffer)
   clr POSY
@@ -246,6 +251,11 @@ drawFramePixels:
   inc POSY
   cpi POSY, 32
   brne drawFrameLine
+  pop POSY
+  pop POSX
+  pop TMP2
+  pop TMP
+  pop RGB
   ret
 
 writeToRow:
