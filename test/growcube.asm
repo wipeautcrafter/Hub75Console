@@ -10,7 +10,6 @@ main:
   out SPL, TMP
 
   call initialize
-  call clearFrameBuffer
 leinit:
   ldi TMP4, 3
 grid:

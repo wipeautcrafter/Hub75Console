@@ -23,6 +23,7 @@ initialize:
   out PORTB, TMP
   out PORTC, TMP
   out PORTD, TMP
+  call clearFrameBuffer
   ret
 
 ; RELATED TO FRAME BUFFER
